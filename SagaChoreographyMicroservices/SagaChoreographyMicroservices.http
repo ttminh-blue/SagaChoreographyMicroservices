@@ -1,0 +1,6 @@
+@SagaChoreographyMicroservices_HostAddress = http://localhost:5098
+
+GET {{SagaChoreographyMicroservices_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

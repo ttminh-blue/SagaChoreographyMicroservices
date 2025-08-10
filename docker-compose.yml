@@ -1,0 +1,22 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    hostname: "rabbitmq"
+    labels:
+      NAME: "rabbitmq"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  order-service:
+    build:
+      context: .
+      dockerfile: OrderService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports: 
+      - "3001:80"
+      - "3031:443"
+    restart: on-failure:5 
+    depends_on:
+      - "rabbitmq"
