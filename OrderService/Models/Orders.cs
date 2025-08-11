@@ -1,5 +1,4 @@
 ﻿using CommonModels;
-using System.Collections.Generic;
 
 namespace OrderService.Models
 {

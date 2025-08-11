@@ -1,19 +1,14 @@
-﻿using OrderService.Models.Context;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
+﻿using RabbitMQ.Client.Events;
 using System.Text;
 
 namespace OrderService.Events
 {
     public class EventListener : BackgroundService
     {
-        private readonly OrderDb _orderDb;
-
         private readonly RabbitMqChannelProvider _provider;
-        public EventListener(RabbitMqChannelProvider provider, OrderDb db)
+        public EventListener(RabbitMqChannelProvider provider)
         {
             _provider = provider;
-            _orderDb = db;
         }
 
         protected override async Task<Task> ExecuteAsync(CancellationToken stoppingToken)
