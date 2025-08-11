@@ -15,24 +15,40 @@ namespace OrderService.Events
         {
             var factory = new ConnectionFactory
             {
-                HostName = "localhost",
+                HostName = "rabbitmq",
                 Port = 5672,
                 Password = "guest",
                 UserName = "guest"
             };
 
-            var connection = await factory.CreateConnectionAsync();
-            var channel = await connection.CreateChannelAsync();
 
-            await channel.QueueDeclareAsync(
-                queue: "ordersEventsQueue",
-                durable: false,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null
-            );
+            const int maxRetries = 10;
+            const int delayMs = 3000;
 
-            return channel;
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    var connection = await factory.CreateConnectionAsync();
+                    var channel = await connection.CreateChannelAsync();
+
+                    await channel.QueueDeclareAsync(
+                        queue: "ordersEventsQueue",
+                        durable: false,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: null
+                    );
+
+                    return channel;
+                }
+                catch (Exception ex)
+                {
+                    if (i == maxRetries - 1) throw;
+                    await Task.Delay(delayMs);
+                }
+            }
+            return null;
         }
 
         public Task<IChannel> GetChannelAsync() => _channelTask;
