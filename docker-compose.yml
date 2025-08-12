@@ -16,26 +16,33 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-      
+   
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
-      SA_PASSWORD: "AaBbCcD1#"
+      SA_PASSWORD : "AaBbCcD123!"
       ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "AaBbCcD123!"
     ports:
      - "1433:1433"
     volumes:
      - sqlvolume:/var/opt/mssql
+     - ./init.sql:/init.sql
     networks:
      - productnetwork
-   
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "AaBbCcD123!", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      
   order-service:
     build:
       context: .
       dockerfile: OrderService/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OrderDb;User Id=sa;Password=AaBbCcD1#;TrustServerCertificate=True;
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=OrderDb;User Id=sa;Password=AaBbCcD123!;TrustServerCertificate=True;
     ports: 
       - "3001:80"
       - "3031:443"
