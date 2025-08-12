@@ -48,5 +48,51 @@ namespace OrderService.Services
 
             return request;
         }
+
+        public async Task<List<CreateOrderRequest>> GetAllOrders()
+        {
+            List<Orders> orders = await _orderRepository.GetAll();
+            List<OrderItem> orderItems = await _orderItemService.GetAllOrderItems();
+
+            var result = orders.Select(order => new CreateOrderRequest
+            {
+                CustomerId = order.CustomerId,
+                OrderID = order.Id,
+                OrderItems = orderItems
+                            .Where(oi => oi.OrderId == order.Id)
+                            .Select(oi => new OrderDTO
+                            {
+                                ProductId = oi.ProductId,
+                                UnitPrice = oi.UnitPrice,
+                                Units = oi.Units
+                            })
+                            .ToList()
+            }).ToList();
+
+            return result;
+        }
+
+        public async Task<CreateOrderRequest> GetOrder(Guid id)
+        {
+            Orders order = await _orderRepository.GetOne(x => x.Id == id);
+            List<OrderItem> orderItem = await _orderItemService.GetOrderItem(id);
+
+            CreateOrderRequest response = new()
+            {
+                CustomerId = order.CustomerId,
+                OrderID = order.Id,
+                OrderItems = orderItem
+                            .Where(oi => oi.OrderId == order.Id)
+                            .Select(oi => new OrderDTO
+                            {
+                                ProductId = oi.ProductId,
+                                UnitPrice = oi.UnitPrice,
+                                Units = oi.Units
+                            })
+                            .ToList()
+            };
+
+            return response;
+        }
     }
 }

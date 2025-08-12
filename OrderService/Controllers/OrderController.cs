@@ -24,10 +24,19 @@ namespace OrderService.Controllers
             return Ok(requestCreated);
         }
 
-        //[HttpGet("GetAllOrders")]
-        //public async Task<List<OrderDTO>> GetAllOrders()
-        //{
+        [HttpGet("GetAllOrders")]
+        public async Task<List<CreateOrderRequest>> GetAllOrders()
+        {
+            var orders = await _orderService.GetAllOrders();
+            return orders;
+        }
 
-        //}
+        [HttpGet("GetOrder/{orderID}")]
+        public async Task<CreateOrderRequest> GetOrder(Guid orderID)
+        {
+            var order = await _orderService.GetOrder(orderID);
+            return order;
+        }
+
     }
 }

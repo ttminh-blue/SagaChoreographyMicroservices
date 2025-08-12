@@ -30,5 +30,16 @@ namespace OrderService.Services
 
             return request;
         }
+        public async Task<List<OrderItem>> GetAllOrderItems()
+        {
+            List<OrderItem> orderItems = await _orderItemRepository.GetAll();
+            return orderItems;
+        }
+
+        public async Task<List<OrderItem>> GetOrderItem(Guid id)
+        {
+            List<OrderItem> orderItem = await _orderItemRepository.GetAll(x => x.OrderId == id);
+            return orderItem;
+        }
     }
 }
