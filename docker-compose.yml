@@ -53,6 +53,27 @@ services:
       rabbitmq:
         condition: service_healthy
         
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: data123!#
+      MYSQL_DATABASE: PaymentDb
+      MYSQL_USER: paymentuser
+      MYSQL_PASSWORD: paymentpass
+    ports:
+      - "3307:3306"
+    networks:
+      - productnetwork
+    volumes:
+      - mysqlvolume:/var/lib/mysql
+      - ./initDb/payment.sql:/docker-entrypoint-initdb.d/payment.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
   payment-service:
     build:
       context: .
@@ -69,6 +90,8 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
+      mysql:
+        condition: service_healthy
         
         
 networks:
@@ -76,3 +99,4 @@ networks:
 
 volumes:
   sqlvolume:
+  mysqlvolume:

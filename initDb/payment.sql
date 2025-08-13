@@ -1,0 +1,12 @@
+CREATE DATABASE IF NOT EXISTS PaymentDb;
+USE PaymentDb;
+
+CREATE TABLE IF NOT EXISTS Payments (
+    Id CHAR(36) NOT NULL PRIMARY KEY,
+    OrderId CHAR(36) NOT NULL,
+    PaymentDate DATETIME NOT NULL,
+    Amount DECIMAL(18,2) NOT NULL,
+    PaymentMethod VARCHAR(50) NOT NULL,
+    PaymentStatus INT NOT NULL,
+    TransactionId VARCHAR(100) NULL
+);
