@@ -1,4 +1,5 @@
-﻿using OrderService.Models.Dtos;
+﻿using CommonModels;
+using OrderService.Models.Dtos;
 
 namespace OrderService.Services.Interfaces
 {
@@ -7,6 +8,6 @@ namespace OrderService.Services.Interfaces
         public Task<CreateOrderRequest> CreateOrder(CreateOrderRequest user);
         public Task<List<CreateOrderRequest>> GetAllOrders();
         public Task<CreateOrderRequest> GetOrder(Guid id);
-
+        public Task<Guid> UpdateOrderStatus(Guid id, OrderStatus status);
     }
 }

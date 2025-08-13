@@ -53,6 +53,23 @@ services:
       rabbitmq:
         condition: service_healthy
         
+  payment-service:
+    build:
+      context: .
+      dockerfile: PaymentService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=Server=localhost;Port=3306;Database=PaymentDb;User=root;Password=data123!#;
+    ports: 
+      - "3002:81"
+      - "3032:444"
+    networks:
+     - productnetwork
+    restart: on-failure:5 
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+        
         
 networks:
   productnetwork:

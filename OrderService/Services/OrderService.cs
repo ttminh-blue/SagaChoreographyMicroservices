@@ -94,5 +94,14 @@ namespace OrderService.Services
 
             return response;
         }
+
+        public async Task<Guid> UpdateOrderStatus(Guid id, OrderStatus status)
+        {
+            Orders order = await _orderRepository.GetOne(x => x.Id == id);
+            order.OrderStatus = status;
+
+            await _orderRepository.Update(order);
+            return id;
+        }
     }
 }

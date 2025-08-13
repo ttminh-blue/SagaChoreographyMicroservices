@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace OrderService.Events
+namespace PaymentService.Events
 {
     public class RabbitMqChannelProvider
     {
@@ -33,7 +33,7 @@ namespace OrderService.Events
                     var channel = await connection.CreateChannelAsync();
 
                     await channel.QueueDeclareAsync(
-                        queue: "ordersEventsQueue",
+                        queue: "paymentEventsQueue",
                         durable: false,
                         exclusive: false,
                         autoDelete: false,
@@ -53,5 +53,4 @@ namespace OrderService.Events
 
         public Task<IChannel> GetChannelAsync() => _channelTask;
     }
-
 }

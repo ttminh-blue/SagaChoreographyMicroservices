@@ -1,4 +1,4 @@
-﻿namespace CommonModels
+﻿namespace PaymentService.Models
 {
     public enum OrderStatus
     {

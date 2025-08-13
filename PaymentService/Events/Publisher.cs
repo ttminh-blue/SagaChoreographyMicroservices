@@ -1,10 +1,9 @@
-﻿using CommonModels;
-using Newtonsoft.Json;
-using OrderService.Events.Interfaces;
+﻿using Newtonsoft.Json;
+using PaymentService.Events.Interfaces;
 using RabbitMQ.Client;
 using System.Text;
 
-namespace OrderService.Events
+namespace PaymentService.Events
 {
     public class Publisher : IPublisher
     {
@@ -23,7 +22,7 @@ namespace OrderService.Events
             var body = Encoding.UTF8.GetBytes(message);
             var props = new BasicProperties();
 
-            await channel.BasicPublishAsync("", "ordersEventsQueue", true, props, body);
+            await channel.BasicPublishAsync("", "paymentEventsQueue", true, props, body);
         }
     }
 }
