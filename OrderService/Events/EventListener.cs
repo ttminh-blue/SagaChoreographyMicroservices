@@ -34,7 +34,7 @@ namespace OrderService.Events
                 }
             };
 
-            await channel.BasicConsumeAsync(queue: "paymentEventsQueue", autoAck: true, consumer: consumer);
+            //await channel.BasicConsumeAsync(queue: "paymentEventsQueue", autoAck: true, consumer: consumer);
             return Task.CompletedTask;
         }
     }

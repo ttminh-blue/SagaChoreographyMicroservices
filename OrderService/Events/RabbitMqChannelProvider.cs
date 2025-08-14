@@ -15,7 +15,7 @@ namespace OrderService.Events
         {
             var factory = new ConnectionFactory
             {
-                HostName = "localhost",
+                HostName = "rabbitmq",
                 Port = 5672,
                 Password = "guest",
                 UserName = "guest"

@@ -2,11 +2,11 @@
 
 namespace OrderService.Repositories.IRepositories
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork : IDisposable
     {
-        Task<IDbContextTransaction> BeginTransactionAsync();
-        Task CommitTransactionAsync();
-        Task RollbackTransactionAsync();
+        IOutboxRepository OutboxMessages { get; }
+        IOrderRepository Orders { get; }
+        IOrderItemRepository OrderItems { get; }
+        int Complete();
     }
-
 }

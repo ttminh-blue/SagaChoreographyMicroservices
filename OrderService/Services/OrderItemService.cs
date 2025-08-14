@@ -7,10 +7,10 @@ namespace OrderService.Services
 {
     public class OrderItemService : IOrderItemService
     {
-        private readonly IOrderItemRepository _orderItemRepository;
-        public OrderItemService(IOrderItemRepository orderItemRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public OrderItemService(IUnitOfWork unitOfWork)
         {
-            _orderItemRepository = orderItemRepository;
+            _unitOfWork = unitOfWork;
         }
         public async Task<CreateOrderRequest> CreateOrderItems(CreateOrderRequest request)
         {
@@ -25,20 +25,20 @@ namespace OrderService.Services
 
             foreach (var item in orderItems)
             {
-                await _orderItemRepository.Create(item);
+                await _unitOfWork.OrderItems.Create(item);
             }
 
             return request;
         }
         public async Task<List<OrderItem>> GetAllOrderItems()
         {
-            List<OrderItem> orderItems = await _orderItemRepository.GetAll();
+            List<OrderItem> orderItems = await _unitOfWork.OrderItems.GetAll();
             return orderItems;
         }
 
         public async Task<List<OrderItem>> GetOrderItem(Guid id)
         {
-            List<OrderItem> orderItem = await _orderItemRepository.GetAll(x => x.OrderId == id);
+            List<OrderItem> orderItem = await _unitOfWork.OrderItems.GetAll(x => x.OrderId == id);
             return orderItem;
         }
     }

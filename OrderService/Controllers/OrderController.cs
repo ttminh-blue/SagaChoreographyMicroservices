@@ -37,6 +37,5 @@ namespace OrderService.Controllers
             var order = await _orderService.GetOrder(orderID);
             return order;
         }
-
     }
 }

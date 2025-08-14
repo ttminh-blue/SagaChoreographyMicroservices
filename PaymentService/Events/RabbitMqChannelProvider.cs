@@ -15,7 +15,7 @@ namespace PaymentService.Events
         {
             var factory = new ConnectionFactory
             {
-                HostName = "localhost",
+                HostName = "rabbitmq",
                 Port = 5672,
                 Password = "guest",
                 UserName = "guest"
