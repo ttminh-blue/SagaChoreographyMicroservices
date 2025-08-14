@@ -1,4 +1,5 @@
 ﻿using CommonModels;
+using Newtonsoft.Json;
 using OrderService.Events.Interfaces;
 using OrderService.Models;
 using OrderService.Models.Dtos;
@@ -12,11 +13,15 @@ namespace OrderService.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IPublisher _publisher;
         private readonly IOrderItemService _orderItemService;
-        public OrderService(IOrderRepository orderRepository, IPublisher publisher, IOrderItemService orderItemService)
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IOutboxRepository _outboxRepository;
+        public OrderService(IOrderRepository orderRepository, IPublisher publisher, IOrderItemService orderItemService, IUnitOfWork unitOfWork, IOutboxRepository outboxRepository)
         {
             _orderRepository = orderRepository;
             _publisher = publisher;
             _orderItemService = orderItemService;
+            _unitOfWork = unitOfWork;
+            _outboxRepository = outboxRepository;
         }
 
         public async Task<CreateOrderRequest> CreateOrder(CreateOrderRequest request)
@@ -33,18 +38,46 @@ namespace OrderService.Services
                 OrderStatus = OrderStatus.Pending,
                 OrderAmount = orderAmount
             };
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
 
-            await _orderRepository.Create(order);
-
-            request.OrderID = orderId;
-            await _orderItemService.CreateOrderItems(request);
-
-            _publisher.Publish(new OrderEvent
+            try
             {
-                CustomerId = request.CustomerId,
-                OrderAmount = (int)orderAmount,
-                OrderId = orderId
-            });
+                await _orderRepository.Create(order);
+
+                request.OrderID = orderId;
+                await _orderItemService.CreateOrderItems(request);
+
+                //_publisher.Publish(new OrderEvent
+                //{
+                //    CustomerId = request.CustomerId,
+                //    OrderAmount = (int)orderAmount,
+                //    OrderId = orderId
+                //});
+
+                OrderEvent orderEvent = new()
+                {
+                    CustomerId = request.CustomerId,
+                    OrderAmount = (int)orderAmount,
+                    OrderId = orderId
+                };
+
+                OutboxMessage outboxMessage = new()
+                {
+                    Id = Guid.NewGuid(),
+                    OccurredOn = DateTime.UtcNow,
+                    Type = nameof(OrderEvent),
+                    Payload = JsonConvert.SerializeObject(orderEvent)
+                };
+
+                await _outboxRepository.Create(outboxMessage);
+                await _unitOfWork.CommitTransactionAsync();
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+
 
             return request;
         }

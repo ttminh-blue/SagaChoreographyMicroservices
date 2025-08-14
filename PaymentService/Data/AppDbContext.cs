@@ -28,6 +28,7 @@ namespace PaymentService.Data
                 entity.Property(e => e.PaymentMethod).HasMaxLength(50).IsRequired();
                 entity.Property(e => e.PaymentStatus).IsRequired();
                 entity.Property(e => e.TransactionId).HasMaxLength(100);
+
             });
         }
     }
