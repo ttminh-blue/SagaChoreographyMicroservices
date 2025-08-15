@@ -22,10 +22,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddSingleton<RabbitMqChannelProvider>();
 builder.Services.AddHostedService<EventListener>();
+builder.Services.AddHostedService<PublishMessageListener>();
 builder.Services.AddSingleton<IPublisher, Publisher>();
 
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService.Services.PaymentService>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IOutboxRepository, OutboxRepository>();
 
 builder.Services.AddSwaggerGen();
 

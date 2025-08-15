@@ -1,4 +1,5 @@
-﻿using PaymentService.Events;
+﻿using Newtonsoft.Json;
+using PaymentService.Events;
 using PaymentService.Events.Interfaces;
 using PaymentService.Models;
 using PaymentService.Repositories.IRepositories;
@@ -8,11 +9,11 @@ namespace PaymentService.Services
 {
     public class PaymentService : IPaymentService
     {
-        private readonly IPaymentRepository _paymentRepository;
         private readonly IPublisher _publisher;
-        public PaymentService(IPaymentRepository paymentRepository, IPublisher publisher)
+        private readonly IUnitOfWork _unitOfWork;
+        public PaymentService(IUnitOfWork unitOfWork, IPublisher publisher)
         {
-            _paymentRepository = paymentRepository;
+            _unitOfWork = unitOfWork;
             _publisher = publisher;
         }
 
@@ -31,10 +32,20 @@ namespace PaymentService.Services
                 TransactionId = transactionId
             };
 
-            await _paymentRepository.Create(paymentRequest);
+            await _unitOfWork.Payments.Create(paymentRequest);
 
             order.OrderStatus = OrderStatus.Paid;
-            _publisher.Publish(order);
+
+            OutboxMessage outboxMessage = new()
+            {
+                Id = Guid.NewGuid(),
+                OccurredOn = DateTime.UtcNow,
+                Type = nameof(OrderEvent),
+                Payload = JsonConvert.SerializeObject(order)
+            };
+
+            await _unitOfWork.OutboxMessages.Create(outboxMessage);
+            _unitOfWork.Complete();
 
             return order;
         }

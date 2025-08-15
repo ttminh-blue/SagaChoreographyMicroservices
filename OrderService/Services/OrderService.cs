@@ -1,6 +1,5 @@
 ﻿using CommonModels;
 using Newtonsoft.Json;
-using OrderService.Events.Interfaces;
 using OrderService.Models;
 using OrderService.Models.Dtos;
 using OrderService.Repositories.IRepositories;
@@ -37,18 +36,11 @@ namespace OrderService.Services
             request.OrderID = orderId;
             await _orderItemService.CreateOrderItems(request);
 
-                //_publisher.Publish(new OrderEvent
-                //{
-                //    CustomerId = request.CustomerId,
-                //    OrderAmount = (int)orderAmount,
-                //    OrderId = orderId
-                //});
-
             OrderEvent orderEvent = new()
             {
-                 CustomerId = request.CustomerId,
-                 OrderAmount = (int)orderAmount,
-                 OrderId = orderId
+                CustomerId = request.CustomerId,
+                OrderAmount = (int)orderAmount,
+                OrderId = orderId
             };
 
             OutboxMessage outboxMessage = new()

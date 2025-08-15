@@ -21,6 +21,7 @@ namespace OrderService.Events
         {
             var channel = await _provider.GetChannelAsync();
             var consumer = new AsyncEventingBasicConsumer(channel);
+
             consumer.ReceivedAsync += async (model, ea) =>
             {
                 var body = ea.Body.ToArray();
@@ -34,7 +35,7 @@ namespace OrderService.Events
                 }
             };
 
-            //await channel.BasicConsumeAsync(queue: "paymentEventsQueue", autoAck: true, consumer: consumer);
+            await channel.BasicConsumeAsync(queue: "paymentEventsQueue", autoAck: true, consumer: consumer);
             return Task.CompletedTask;
         }
     }

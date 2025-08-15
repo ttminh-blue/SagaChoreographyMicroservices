@@ -19,6 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddSingleton<RabbitMqChannelProvider>();
 builder.Services.AddHostedService<EventListener>();
+builder.Services.AddHostedService<PublishMessageListener>();
 builder.Services.AddSingleton<IPublisher, Publisher>();
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
@@ -27,9 +28,8 @@ builder.Services.AddScoped<IOrderService, OrderService.Services.OrderService>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IOrderItemService, OrderService.Services.OrderItemService>();
 builder.Services.AddScoped<IOutboxRepository, OutboxRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
