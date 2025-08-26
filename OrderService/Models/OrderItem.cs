@@ -8,7 +8,7 @@ namespace OrderService.Models
         public int ProductId { get; set; }
         public double UnitPrice { get; set; }
         public int Units { get; set; }
-
+        public string ProductName { get; set; }
         [ForeignKey("Order")]
         public Guid OrderId { get; set; }
         public Orders Order { get; set; }

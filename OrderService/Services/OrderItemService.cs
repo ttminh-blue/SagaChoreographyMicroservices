@@ -20,7 +20,8 @@ namespace OrderService.Services
                 OrderId = request.OrderID,
                 ProductId = x.ProductId,
                 UnitPrice = x.UnitPrice,
-                Units = x.Units
+                Units = x.Units,
+                ProductName = x.ProductName
             });
 
             foreach (var item in orderItems)

@@ -4,6 +4,7 @@ using OrderService.Events;
 using OrderService.Events.Interfaces;
 using OrderService.Repositories;
 using OrderService.Repositories.IRepositories;
+using OrderService.Services;
 using OrderService.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +31,11 @@ builder.Services.AddScoped<IOrderItemService, OrderService.Services.OrderItemSer
 builder.Services.AddScoped<IOutboxRepository, OutboxRepository>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddSingleton<ElasticsearchClientProvider>();
+builder.Services.AddSingleton(sp => sp.GetRequiredService<ElasticsearchClientProvider>().Client);
+
+builder.Services.AddScoped<IElasticsearchOrderRepository, ElasticsearchOrderRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

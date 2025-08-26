@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderService.Models.Dtos;
+using OrderService.Repositories.IRepositories;
 using OrderService.Services.Interfaces;
 
 namespace OrderService.Controllers
@@ -9,9 +10,11 @@ namespace OrderService.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
-        public OrderController(IOrderService orderService)
+        private readonly IElasticsearchOrderRepository _elasticsearchOrderRepository;
+        public OrderController(IOrderService orderService, IElasticsearchOrderRepository elasticsearchOrderRepository)
         {
             _orderService = orderService;
+            _elasticsearchOrderRepository = elasticsearchOrderRepository;
         }
 
         [HttpPost("CreateOrder")]
@@ -36,6 +39,17 @@ namespace OrderService.Controllers
         {
             var order = await _orderService.GetOrder(orderID);
             return order;
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+                return BadRequest("Keyword is required");
+
+            var results = await _elasticsearchOrderRepository.SearchOrdersAsync(keyword);
+
+            return Ok(results);
         }
     }
 }

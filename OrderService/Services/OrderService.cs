@@ -11,7 +11,7 @@ namespace OrderService.Services
     {
         private readonly IOrderItemService _orderItemService;
         private readonly IUnitOfWork _unitOfWork;
-        public OrderService(IUnitOfWork unitOfWork, IOrderItemService orderItemService)
+        public OrderService(IUnitOfWork unitOfWork, IOrderItemService orderItemService, IElasticsearchOrderRepository elasticSearch)
         {
             _unitOfWork = unitOfWork;
             _orderItemService = orderItemService;
@@ -52,6 +52,7 @@ namespace OrderService.Services
             };
 
             await _unitOfWork.OutboxMessages.Create(outboxMessage);
+
             _unitOfWork.Complete();
 
             return request;

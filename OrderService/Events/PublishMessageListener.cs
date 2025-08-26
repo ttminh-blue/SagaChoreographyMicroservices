@@ -2,6 +2,7 @@
 using CommonModels;
 using Newtonsoft.Json;
 using OrderService.Events.Interfaces;
+using OrderService.Models;
 using OrderService.Repositories.IRepositories;
 
 namespace OrderService.Events
@@ -21,6 +22,9 @@ namespace OrderService.Events
             {
                 using var scope = _scopeFactory.CreateScope();
                 var outboxRepository = scope.ServiceProvider.GetRequiredService<IOutboxRepository>();
+                var orderRepo = scope.ServiceProvider.GetRequiredService<IOrderRepository>();
+                var orderItemRepo = scope.ServiceProvider.GetRequiredService<IOrderItemRepository>();
+                var elasticSearchRepo = scope.ServiceProvider.GetRequiredService<IElasticsearchOrderRepository>();
 
                 var messages = await outboxRepository.GetAll(
                     x => !x.Processed
@@ -34,6 +38,13 @@ namespace OrderService.Events
                         if (eventObj != null)
                         {
                             _publisher.Publish(eventObj);
+                            var order = await orderRepo.GetOne(x => x.Id == eventObj.OrderId);
+                            if (order != null)
+                            {
+                                List<OrderItem> orderItems = await orderItemRepo.GetAll(x => x.OrderId == eventObj.OrderId);
+                                order.OrderItems = orderItems;
+                                await elasticSearchRepo.IndexOrderAsync(order);
+                            }
                         }
                         msg.Processed = true;
                         msg.ProcessedOn = DateTime.UtcNow;
@@ -41,7 +52,6 @@ namespace OrderService.Events
                     }
                     catch
                     {
-                        // log error, retry later
                     }
                 }
 

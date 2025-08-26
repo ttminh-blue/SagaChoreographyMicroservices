@@ -5,5 +5,6 @@
         public int ProductId { get; set; }
         public double UnitPrice { get; set; }
         public int Units { get; set; }
+        public string ProductName { get; set; }
     }
 }
